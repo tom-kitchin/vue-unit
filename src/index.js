@@ -78,7 +78,7 @@ function createSlots (slots, h) {
         if (name !== 'default') {
           throw new Error(`[VueUnit]: Error when rendering named slot "${name}":\n\n${error.message}`)
         }
-        if (!error.message.match(/\[Vue parser\]: Component template requires a root element, rather than just text/)) {
+        if (!error.message.match(/Component template requires a root element, rather than just text/)) {
           throw new Error(`[VueUnit]: Error when rendering default slot:\n\n${error.message}`)
         }
         return Vue.prototype._v(slots[name])
