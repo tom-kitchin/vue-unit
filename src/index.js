@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import sinon from 'sinon'
-import kebabCase from 'lodash.kebabcase'
+import _ from 'lodash'
 
 export { default as waitForUpdate } from './wait-for-update'
 
@@ -9,27 +9,31 @@ let mountedInstances = []
 let actions = {}
 let getters = {}
 
-export function mount (component, props = {}, on = {}, slots = {}, provide = {}, callback) {
+export function mount (component, props = {}, on = {}, slots = {}, provide = {}, store, callback) {
   if (arguments.length === 2 && typeof props === 'function') {
-    return mount(component, {}, {}, {}, {}, props)
+    return mount(component, {}, {}, {}, {}, undefined, props)
   }
 
   if (arguments.length <= 3 && isOptions(props)) {
     const cb = typeof on === 'function' ? on : undefined
-    return mount(component, props.props, props.on, props.slots, props.provide, cb)
+    return mount(component, props.props, props.on, props.slots, props.provide, props.store, cb)
   }
 
   if (!isOptions(props) && arguments.length < 6 && typeof arguments[arguments.length - 1] === 'function') {
     if (typeof on === 'function') {
-      return mount(component, props, {}, {}, {}, on)
+      return mount(component, props, {}, {}, {}, undefined, on)
     }
     /* istanbul ignore else */
     if (typeof slots === 'function') {
-      return mount(component, props, on, {}, {}, slots)
+      return mount(component, props, on, {}, {}, undefined, slots)
     }
     /* istanbul ignore else */
     if (typeof provide === 'function') {
-      return mount(component, props, on, slots, {}, provide)
+      return mount(component, props, on, slots, {}, undefined, provide)
+    }
+    /* istanbul ignore else */
+    if (typeof store === 'function') {
+      return mount(component, props, on, slots, provide, undefined, store)
     }
   }
 
@@ -43,10 +47,14 @@ export function mount (component, props = {}, on = {}, slots = {}, provide = {},
       createSlots(slots, h)),
     provide: provide
   }
-  const store = buildFakeStore()
 
   if (store) {
     vueOptions.store = store
+  } else {
+    let store = buildFakeStore()
+    if (store) {
+      vueOptions.store = store
+    }
   }
 
   const vm = new Vue(vueOptions)
@@ -65,7 +73,7 @@ export function mount (component, props = {}, on = {}, slots = {}, provide = {},
 }
 
 function isOptions (object) {
-  return ('props' in object || 'on' in object || 'slots' in object || 'provide' in object)
+  return ('props' in object || 'on' in object || 'slots' in object || 'provide' in object || 'store' in object)
 }
 
 function createSlots (slots, h) {

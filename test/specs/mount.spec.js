@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import { mount, beforeEachHooks, afterEachHooks } from 'src'
 
 describe('mount', () => {
@@ -77,18 +78,28 @@ describe('mount', () => {
   })
 
   it('mounts a component with provided dependencies', () => {
-      const ComponentWithInjects = {
-        template: '<div>Hello {{ valueFromInject }}</div>',
-        inject: ['providedValue'],
-        data () {
-          return {
-            valueFromInject: this.providedValue
-          }
+    const ComponentWithInjects = {
+      template: '<div>Hello {{ valueFromInject }}</div>',
+      inject: ['providedValue'],
+      data () {
+        return {
+          valueFromInject: this.providedValue
         }
       }
-      const vm = mount(ComponentWithInjects, { provide: { providedValue: 'World' } })
-      expect(vm.$el.textContent).to.equal('Hello World')
-      expect(vm.providedValue).to.equal('World')
+    }
+    const vm = mount(ComponentWithInjects, { provide: { providedValue: 'World' } })
+    expect(vm.$el.textContent).to.equal('Hello World')
+    expect(vm.providedValue).to.equal('World')
+  })
+
+  it('mounts a component with a provided store instead of using the built-in fake store', () => {
+    const ComponentUsingStore = {
+      template: '<div>Hello {{ $store.state.world }}'
+    }
+    const store = new Vuex.Store({ state: { world: 'World' } })
+
+    const vm = mount(ComponentUsingStore, { store: store })
+    expect(vm.$el.textContent).to.equal('Hello World')
   })
 
   it('receives an optional callback which is passed the vm after mounting', () => {
