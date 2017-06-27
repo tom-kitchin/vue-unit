@@ -83,7 +83,7 @@ function createSlots (slots, h) {
         if (name !== 'default') {
           throw new Error(`[VueUnit]: Error when rendering named slot "${name}":\n\n${error.message}`)
         }
-        if (!error.message.match(/\[Vue parser\]: Component template requires a root element, rather than just text/)) {
+        if (!error.message.match(/Component template requires a root element, rather than just text/)) {
           throw new Error(`[VueUnit]: Error when rendering default slot:\n\n${error.message}`)
         }
         return Vue.prototype._v(slots[name])
@@ -95,18 +95,33 @@ function createSlots (slots, h) {
 }
 
 export function shallow (component, ...args) {
-  const c = { ...component }
-  c.components = { ...component.components }
-  shallowRenderComponents(c)
+  let c = constructShallowComponent(component)
   return mount(c, ...args)
 }
 
-function shallowRenderComponents (component) {
+export function shallowExcept (component, exceptions, ...args) {
+  let c = constructShallowComponent(component, exceptions)
+  _.each(exceptions, (exceptionComponent) => {
+    let shallowException = constructShallowComponent(exceptionComponent)
+    c.components[exceptionComponent.name] = shallowException
+  })
+  return mount(c, ...args)
+}
+
+function constructShallowComponent (component, exceptions = []) {
+  let c = { ...component }
+  c.components = { ...component.components }
+  shallowRenderComponents(c, exceptions)
+  return c
+}
+
+function shallowRenderComponents (component, exceptions = []) {
   /* istanbul ignore if */
   if (!component.components) return
-  Object.keys(component.components).forEach(c => {
-    const tag = kebabCase(c)
-    component.components[c] = { template: `<${tag}></${tag}>` }
+  Object.keys(component.components).forEach(function (c) {
+    if (_.find(exceptions, exception => exception.name === c)) { return }
+    const tag = _.kebabCase(c)
+    component.components[c] = { template: `<${tag}><slot></slot></${tag}>` }
     Vue.config.ignoredElements.push(tag)
   })
 }
@@ -124,9 +139,7 @@ export function build (component, defaultCallback) {
 }
 
 export function buildShallow (component, ...args) {
-  const c = { ...component }
-  c.components = { ...component.components }
-  shallowRenderComponents(c)
+  let c = constructShallowComponent(component)
   return build(c, ...args)
 }
 
