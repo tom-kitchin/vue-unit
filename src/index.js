@@ -60,7 +60,7 @@ export function mount (component, props = {}, on = {}, slots = {}, callback) {
 }
 
 function isOptions (object) {
-  return ('props' in object || 'event' in object || 'slots' in object)
+  return ('props' in object || 'on' in object || 'slots' in object)
 }
 
 function createSlots (slots, h) {
@@ -90,18 +90,33 @@ function createSlots (slots, h) {
 }
 
 export function shallow (component, ...args) {
-  const c = { ...component }
-  c.components = { ...component.components }
-  shallowRenderComponents(c)
+  let c = constructShallowComponent(component)
   return mount(c, ...args)
 }
 
-function shallowRenderComponents (component) {
+export function shallowExcept (component, exceptions, ...args) {
+  let c = constructShallowComponent(component, exceptions)
+  _.each(exceptions, (exceptionComponent) => {
+    let shallowException = constructShallowComponent(exceptionComponent)
+    c.components[exceptionComponent.name] = shallowException
+  })
+  return mount(c, ...args)
+}
+
+function constructShallowComponent (component, exceptions = []) {
+  let c = { ...component }
+  c.components = { ...component.components }
+  shallowRenderComponents(c, exceptions)
+  return c
+}
+
+function shallowRenderComponents (component, exceptions = []) {
   /* istanbul ignore if */
   if (!component.components) return
-  Object.keys(component.components).forEach(c => {
-    const tag = kebabCase(c)
-    component.components[c] = { template: `<${tag}></${tag}>` }
+  Object.keys(component.components).forEach(function (c) {
+    if (_.find(exceptions, exception => exception.name === c)) { return }
+    const tag = _.kebabCase(c)
+    component.components[c] = { template: `<${tag}><slot></slot></${tag}>` }
     Vue.config.ignoredElements.push(tag)
   })
 }
@@ -119,9 +134,7 @@ export function build (component, defaultCallback) {
 }
 
 export function buildShallow (component, ...args) {
-  const c = { ...component }
-  c.components = { ...component.components }
-  shallowRenderComponents(c)
+  let c = constructShallowComponent(component)
   return build(c, ...args)
 }
 
