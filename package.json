@@ -1,7 +1,7 @@
 {
-  "name": "vue-unit",
-  "version": "0.2.2",
-  "description": "Component testing utilities for Vue.js",
+  "name": "@tom-kitchin/vue-unit",
+  "version": "0.3.3",
+  "description": "Component testing utilities for Vue.js, forked build by github.com/tom-kitchin, original at github.com/wrseward/vue-unit.",
   "main": "build",
   "scripts": {
     "build": "NODE_ENV=production babel src --out-dir build",
@@ -12,12 +12,12 @@
     "vue",
     "vue-unit"
   ],
-  "author": "William Seward <wrseward@gmail.com>",
+  "author": "William Seward <wrseward@gmail.com>, Tom Kitchin <tkitchin@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wrseward/vue-unit/issues"
+    "url": "https://github.com/tom-kitchin/vue-unit/issues"
   },
-  "homepage": "https://github.com/wrseward/vue-unit#readme",
+  "homepage": "https://github.com/tom-kitchin/vue-unit#readme",
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.21.0",

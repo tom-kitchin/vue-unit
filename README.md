@@ -1,5 +1,11 @@
 # VueUnit
 
+THIS IS NOT THE ORIGINAL VERSION.
+The [original vue-unit](https://github.com/wrseward/vue-unit) was build by [William Seward](https://github.com/wrseward).
+I've just forked this because I needed some additional features, and unfortunately the original author hasn't rebuilt
+his NPM package in a while. I am in no way claiming authorship of this library, although I've contributed some features, 
+some of which were developed and PR'd before I made this fork. 
+
 > A library for Vue.js that makes it easier to create and unit test components.
 
 * Easily test props, events, and slots (including named slots)
