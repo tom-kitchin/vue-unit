@@ -8,6 +8,7 @@ let originalIgnoredElements
 let mountedInstances = []
 let actions = {}
 let getters = {}
+let mountConfig = {}
 
 export function mount (component, props = {}, on = {}, slots = {}, provide = {}, store, callback) {
   if (arguments.length === 2 && typeof props === 'function') {
@@ -45,7 +46,8 @@ export function mount (component, props = {}, on = {}, slots = {}, provide = {},
       component,
       { props, on },
       createSlots(slots, h)),
-    provide: provide
+    provide: provide,
+    ...mountConfig
   }
 
   if (store) {
@@ -182,6 +184,10 @@ export function simulate (el, event) {
     el = el.get(0)
   }
   el.dispatchEvent(e)
+}
+
+export function globalMountConfig (config) {
+  mountConfig = config
 }
 
 export function fakeActions (actionName, returns) {

@@ -1,6 +1,6 @@
 {
   "name": "@tom-kitchin/vue-unit",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Component testing utilities for Vue.js, forked build by github.com/tom-kitchin, original at github.com/wrseward/vue-unit.",
   "main": "build",
   "scripts": {

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { mount, beforeEachHooks, afterEachHooks } from 'src'
+import { mount, beforeEachHooks, afterEachHooks, globalMountConfig } from 'src'
 
 describe('mount', () => {
   beforeEach(beforeEachHooks)
@@ -10,6 +10,21 @@ describe('mount', () => {
     const BasicComponent = { template: '<div>Hello</div>' }
     const vm = mount(BasicComponent)
     expect(vm.$el.textContent).to.equal('Hello')
+  })
+
+  it('mounts a component with configured global options', () => {
+    globalMountConfig({
+      provide: { hello: 'World' }
+    })
+    const Component = {
+      template: '<div>Hello, {{ hello }}</div>',
+      inject: ['hello']
+    }
+    const vm = mount(Component)
+
+    globalMountConfig({})
+    
+    expect(vm.$el.textContent).to.equal('Hello, World')
   })
 
   it('mounts a component with props', () => {
